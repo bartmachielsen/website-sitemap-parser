@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='website-sitemap-parser',
-    version='0.0.3',
+    version='0.0.4',
     author="Bart Machielsen",
     author_email="bartmachielsen@gmail.com",
     description="Website Sitemap Parser",

@@ -18,7 +18,7 @@ class RootSitemap(Sitemap):
     pass
 
 
-class News(Page):
+class NewsPage(Page):
     def __init__(self, url, last_modified=None, priority=None, change_freq=None, publication_date=None, title=None, keywords=None, genres=None):
         super().__init__(url, last_modified, priority, change_freq)
         self.publication_date = publication_date
