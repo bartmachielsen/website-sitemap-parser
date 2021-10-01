@@ -37,7 +37,9 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
     stream = response.raw
 
     # response.iter_content is actually better
-    if response.headers.get('Content-Encoding') == 'gzip':
+    if response.headers.get('Content-Encoding') == 'gzip' or \
+            url.endswith('.gz') or \
+            response.headers.get('content-type') == 'application/octet-stream':
         stream = GzipFile(fileobj=stream)
 
     context = etree.iterparse(stream, events=('end',), tag=['{*}url', '{*}sitemap'])
@@ -84,11 +86,15 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
             while elem.getprevious() is not None:
                 if elem.getparent() is not None:
                     del elem.getparent()[0]
-    except etree.XMLSyntaxError:
-        logging.warning(f'Failed processing: {url}')
+    except etree.XMLSyntaxError as e:
+        logging.warning(f'Failed processing: {url} due to {e}')
         return []
 
     if include_root_sitemap:
         yield RootSitemap(url=url)
 
     return []
+
+
+if __name__ == '__main__':
+    print(list(parse('https://www.hermistonherald.com/content/tncms/sitemap/editorial/2016/02.1.xml.gz')))
