@@ -7,7 +7,13 @@ from urllib.parse import urljoin
 
 
 def process_sitemap(sitemap: Sitemap, timeout=None, headers=None, cookies=None):
-    yield from xml_parser.parse(sitemap.url, timeout=timeout, headers=headers, cookies=cookies)
+    yield from xml_parser.parse(
+        sitemap.url,
+        timeout=timeout,
+        headers=headers,
+        cookies=cookies,
+        include_root_sitemap=False
+    )
 
 
 def search_sitemaps(url: str, timeout=None, headers=None, cookies=None) -> List[Page]:
@@ -19,10 +25,22 @@ def search_sitemaps(url: str, timeout=None, headers=None, cookies=None) -> List[
     )
 
     for sitemap in robots_txt_sitemaps:
-        yield from xml_parser.parse(sitemap, timeout=timeout, headers=headers, cookies=cookies)
+        yield from xml_parser.parse(
+            sitemap,
+            timeout=timeout,
+            headers=headers,
+            cookies=cookies,
+            include_root_sitemap=True
+        )
 
     for sitemap in SITEMAP_CHECK_URLS:
-        yield from xml_parser.parse(urljoin(url, sitemap), timeout=timeout, headers=headers, cookies=cookies)
+        yield from xml_parser.parse(
+            urljoin(url, sitemap),
+            timeout=timeout,
+            headers=headers,
+            cookies=cookies,
+            include_root_sitemap=True
+        )
 
 
 if __name__ == '__main__':

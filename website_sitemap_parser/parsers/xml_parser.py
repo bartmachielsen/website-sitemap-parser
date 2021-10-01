@@ -2,7 +2,7 @@ import logging
 import requests
 from lxml import etree
 from gzip import GzipFile
-from website_sitemap_parser.elements import News, Page, Sitemap
+from website_sitemap_parser.elements import News, Page, Sitemap, RootSitemap
 from website_sitemap_parser.config import DEFAULT_COOKIES, DEFAULT_HEADERS, DEFAULT_TIMEOUT
 
 
@@ -19,7 +19,7 @@ def get_element_values(elem):
     return values
 
 
-def parse(url, timeout=None, headers=None, cookies=None):
+def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=False):
     response = requests.get(
         url=url,
         headers=headers or DEFAULT_HEADERS,
@@ -41,6 +41,9 @@ def parse(url, timeout=None, headers=None, cookies=None):
         stream = GzipFile(fileobj=stream)
 
     context = etree.iterparse(stream, events=('end',), tag=['{*}url', '{*}sitemap'])
+
+    if include_root_sitemap:
+        yield RootSitemap(url=url)
 
     for action, elem in context:
         tag = "".join(elem.tag.split('}')[1:])
