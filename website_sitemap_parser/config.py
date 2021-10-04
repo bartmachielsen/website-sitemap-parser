@@ -10,7 +10,10 @@ DEFAULT_HEADERS = {
     'TE': 'trailers',
 }
 
-DEFAULT_COOKIES = {}
+DEFAULT_COOKIES = {
+    "consentUUID": "a469f52f-0654-4c08-9eaf-5b257e94eae3",
+    "authId": "a469f52f-0654-4c08-9eaf-5b257e94eae3"
+}
 SITEMAP_CHECK_URLS = [
     "/sitemap.xml",
     "/sitemap-news.xml",

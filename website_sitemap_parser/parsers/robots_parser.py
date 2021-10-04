@@ -34,7 +34,7 @@ def parse_robots(url, timeout=None, headers=None, cookies=None):
     sitemaps = []
     for line in response.iter_lines():
         line = line.strip().decode('utf-8')
-        if not line or line[0] == "#" or not line.lower().startswith('sitemap:'):
+        if not line or line[0] == "#" or not line.lower().startswith('sitemap: '):
             continue
 
         sitemaps.append(line.split(': ')[1])

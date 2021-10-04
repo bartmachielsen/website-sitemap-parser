@@ -36,6 +36,12 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
 
     stream = response.raw
 
+    if response.headers.get('Content-Type') == 'text/plain' or url.endswith('.txt'):
+        for line in response.iter_lines():
+            yield Page(url=line.decode('utf-8'))
+
+        return []
+
     # response.iter_content is actually better
     if response.headers.get('Content-Encoding') == 'gzip' or \
             url.endswith('.gz') or \
@@ -97,4 +103,4 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
 
 
 if __name__ == '__main__':
-    print(list(parse('https://www.hermistonherald.com/content/tncms/sitemap/editorial/2016/02.1.xml.gz')))
+    print(list(parse('https://www.volkskrant.nl/sitemap/sitemap-21.txt')))

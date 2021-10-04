@@ -26,7 +26,7 @@ def search_sitemaps(url: str, timeout=None, headers=None, cookies=None) -> List[
 
     for sitemap in robots_txt_sitemaps:
         yield from xml_parser.parse(
-            sitemap,
+            urljoin(url, sitemap),
             timeout=timeout,
             headers=headers,
             cookies=cookies,
@@ -44,5 +44,5 @@ def search_sitemaps(url: str, timeout=None, headers=None, cookies=None) -> List[
 
 
 if __name__ == '__main__':
-    for page in search_sitemaps('https://www.ed.nl'):
+    for page in search_sitemaps('https://www.stamfordadvocate.com/'):
         print(page)
