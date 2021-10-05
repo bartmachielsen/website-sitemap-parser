@@ -12,6 +12,9 @@ def get_element_values(elem):
 
     values = {}
     for sub_elem in elem:
+        if callable(sub_elem.tag):
+            continue
+
         if len(sub_elem):
             values["".join(sub_elem.tag.split('}')[1:])] = get_element_values(sub_elem)
         else:
@@ -20,13 +23,18 @@ def get_element_values(elem):
 
 
 def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=False):
-    response = requests.get(
-        url=url,
-        headers=headers or DEFAULT_HEADERS,
-        timeout=timeout or DEFAULT_TIMEOUT,
-        cookies=cookies or DEFAULT_COOKIES,
-        stream=True
-    )
+    try:
+        response = requests.get(
+            url=url,
+            headers=headers or DEFAULT_HEADERS,
+            timeout=timeout or DEFAULT_TIMEOUT,
+            cookies=cookies or DEFAULT_COOKIES,
+            stream=True
+        )
+    except requests.exceptions.RequestException as request_exception:
+        logging.warning(f'Failed to retrieve sitemap from url: {url} due to {request_exception}')
+        return []
+
     if not response.ok:
         if response.status_code != 404:
             logging.warning(

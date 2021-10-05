@@ -17,13 +17,18 @@ def get_robots_url(url):
 
 
 def parse_robots(url, timeout=None, headers=None, cookies=None):
-    response = requests.get(
-        url=get_robots_url(url),
-        headers=headers or DEFAULT_HEADERS,
-        timeout=timeout or DEFAULT_TIMEOUT,
-        cookies=cookies or DEFAULT_COOKIES,
-        stream=True
-    )
+    try:
+        response = requests.get(
+            url=get_robots_url(url),
+            headers=headers or DEFAULT_HEADERS,
+            timeout=timeout or DEFAULT_TIMEOUT,
+            cookies=cookies or DEFAULT_COOKIES,
+            stream=True
+        )
+    except requests.exceptions.RequestException as request_exception:
+        logging.warning(f'Failed to retrieve robots.txt from url: {url} due to {request_exception}')
+        return []
+
     if not response.ok:
         if response.status_code != 404:
             logging.warning(
