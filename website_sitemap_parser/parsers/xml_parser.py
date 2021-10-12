@@ -25,6 +25,7 @@ def get_element_values(elem):
 
 
 def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=False):
+    response = None
     try:
         with Timeout(timeout or DEFAULT_TIMEOUT):
             response = requests.get(
@@ -41,8 +42,8 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
         logging.warning(f'Timeout exception: {url}')
         return []
 
-    if not response.ok:
-        if response.status_code != 404:
+    if not response or not response.ok:
+        if response and response.status_code != 404:
             logging.warning(
                 f'Failed to retrieve parse sitemap with error status {response.status_code} on url: {url}'
             )
