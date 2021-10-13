@@ -6,6 +6,7 @@ from website_sitemap_parser.elements import NewsPage, Page, Sitemap, RootSitemap
 from website_sitemap_parser.config import DEFAULT_COOKIES, DEFAULT_HEADERS, DEFAULT_TIMEOUT, DEFAULT_READ_TIMEOUT
 
 from stopit import ThreadingTimeout as Timeout, TimeoutException
+import dateparser
 
 
 def get_element_values(elem):
@@ -69,6 +70,11 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
         with Timeout(DEFAULT_READ_TIMEOUT):
             for action, elem in context:
                 tag = "".join(elem.tag.split('}')[1:])
+                try:
+                    lastmod = dateparser.parse(values.get('lastmod')) if values.get('lastmod') else None
+                except Exception as e:
+                    logging.warning(f'Failed parsing date due to: {e}')
+                    lastmod = None
 
                 values = get_element_values(elem)
 
@@ -80,7 +86,7 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
                     news_values = values.get('news') or {}
                     yield NewsPage(
                         url=values['loc'],
-                        last_modified=values.get('lastmod'),
+                        last_modified=lastmod,
                         priority=values.get('priority'),
                         change_freq=values.get('changefreq'),
                         publication_date=news_values.get('publication_date'),
@@ -92,14 +98,14 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
                 elif tag == 'url':
                     yield Page(
                         url=values['loc'],
-                        last_modified=values.get('lastmod'),
+                        last_modified=lastmod,
                         priority=values.get('priority'),
                         change_freq=values.get('changefreq')
                     )
                 elif tag == 'sitemap':
                     yield Sitemap(
                         url=values['loc'],
-                        last_modified=values.get('lastmod'),
+                        last_modified=lastmod,
                         priority=values.get('priority'),
                         change_freq=values.get('changefreq')
                     )
