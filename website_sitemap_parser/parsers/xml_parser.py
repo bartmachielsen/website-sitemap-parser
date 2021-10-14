@@ -70,13 +70,14 @@ def parse(url, timeout=None, headers=None, cookies=None, include_root_sitemap=Fa
         with Timeout(DEFAULT_READ_TIMEOUT):
             for action, elem in context:
                 tag = "".join(elem.tag.split('}')[1:])
+
+                values = get_element_values(elem)
+
                 try:
                     lastmod = dateparser.parse(values.get('lastmod')) if values.get('lastmod') else None
                 except Exception as e:
                     logging.warning(f'Failed parsing date due to: {e}')
                     lastmod = None
-
-                values = get_element_values(elem)
 
                 if not values.get('loc'):
                     logging.warning(f'Missing location for element: {tag} {values}')
